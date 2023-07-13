@@ -14,7 +14,7 @@ const Home = () => {
       setInputValue("");
     }
   };
-
+  
   const handleDelete = (index) => {
     setTodos((prevTodos) => prevTodos.filter((_, i) => i !== index));
   };
