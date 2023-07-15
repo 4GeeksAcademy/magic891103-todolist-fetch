@@ -1,8 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const Home = () => {
   const [inputValue, setInputValue] = useState("");
   const [todos, setTodos] = useState([]);
+
+  const username = "magic891103";
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const fetchTodos = () => {
+    fetch(`https://assets.breatheco.de/apis/fake/todos/user/${username}`)
+      .then((response) => response.json())
+      .then((data) => setTodos(data.map((item) => item.label)))
+      .catch((error) => console.error(error));
+  };
 
   const handleInputChange = ({ target: { value } }) => {
     setInputValue(value);
@@ -10,13 +23,39 @@ const Home = () => {
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
-      setTodos((prevTodos) => [...prevTodos, inputValue]);
-      setInputValue("");
+      addTodo();
     }
   };
-  
-  const handleDelete = (index) => {
-    setTodos((prevTodos) => prevTodos.filter((_, i) => i !== index));
+
+  const addTodo = () => {
+    const newTodo = { label: inputValue, done: false };
+    const updatedTodos = [...todos, newTodo];
+
+    fetch(`https://assets.breatheco.de/apis/fake/todos/user/${username}`, {
+      method: "PUT",
+      body: JSON.stringify(updatedTodos),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then(() => {
+        setTodos(updatedTodos);
+        setInputValue("");
+      })
+      .catch((error) => console.error(error));
+  };
+
+  const handleDelete = () => {
+    fetch(`https://assets.breatheco.de/apis/fake/todos/user/${username}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then(() => setTodos([]))
+      .catch((error) => console.error(error));
   };
 
   return (
@@ -35,11 +74,12 @@ const Home = () => {
         {todos.map((todo, index) => (
           <li key={index}>
             {todo}{" "}
-            <i className="fas fa-trash" onClick={handleDelete.bind(null, index)}></i>
+            <i className="fas fa-trash" onClick={handleDelete}></i>
           </li>
         ))}
       </ul>
       <div>{todos.length} tasks</div>
+      <button onClick={handleDelete}>Clean all tasks</button>
     </div>
   );
 };
