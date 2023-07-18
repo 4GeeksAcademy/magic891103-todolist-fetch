@@ -14,7 +14,13 @@ const Home = () => {
   const fetchTodos = () => {
     fetch(`${apiUrl}todos/user/${username}`)
       .then((response) => response.json())
-      .then((data) => setTodos(data.map((item) => item.label)))
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setTodos(data);
+        } else {
+          console.error("Data is not an array:", data);
+        }
+      })
       .catch((error) => console.error(error));
   };
 
@@ -73,10 +79,7 @@ const Home = () => {
           />
         </li>
         {todos.map((todo, index) => (
-          <li key={index}>
-            {todo}{" "}
-            <i className="fas fa-trash" onClick={handleDelete}></i>
-          </li>
+          <li key={index}>{todo.label}</li>
         ))}
       </ul>
       <div>{todos.length} tasks</div>
