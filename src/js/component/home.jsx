@@ -5,13 +5,14 @@ const Home = () => {
   const [todos, setTodos] = useState([]);
 
   const username = "magic891103";
+  const apiUrl = "https://fake-todo-list-52f9a4ed80ce.herokuapp.com/";
 
   useEffect(() => {
     fetchTodos();
   }, []);
 
   const fetchTodos = () => {
-    fetch(`https://assets.breatheco.de/apis/fake/todos/user/${username}`)
+    fetch(`${apiUrl}todos/user/${username}`)
       .then((response) => response.json())
       .then((data) => setTodos(data.map((item) => item.label)))
       .catch((error) => console.error(error));
@@ -31,7 +32,7 @@ const Home = () => {
     const newTodo = { label: inputValue, done: false };
     const updatedTodos = [...todos, newTodo];
 
-    fetch(`https://assets.breatheco.de/apis/fake/todos/user/${username}`, {
+    fetch(`${apiUrl}todos/user/${username}`, {
       method: "PUT",
       body: JSON.stringify(updatedTodos),
       headers: {
@@ -47,7 +48,7 @@ const Home = () => {
   };
 
   const handleDelete = () => {
-    fetch(`https://assets.breatheco.de/apis/fake/todos/user/${username}`, {
+    fetch(`${apiUrl}todos/user/${username}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
